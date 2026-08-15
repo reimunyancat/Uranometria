@@ -1,0 +1,10 @@
+D:\Archive\Uranometria\server\target\debug\deps\zerovec_derive-7abe256c36c3d585.d: C:\Users\lasco\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.4\src\lib.rs C:\Users\lasco\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.4\src\make_ule.rs C:\Users\lasco\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.4\src\make_varule.rs C:\Users\lasco\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.4\src\ule.rs C:\Users\lasco\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.4\src\utils.rs C:\Users\lasco\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.4\src\varule.rs
+
+D:\Archive\Uranometria\server\target\debug\deps\zerovec_derive-7abe256c36c3d585.dll: C:\Users\lasco\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.4\src\lib.rs C:\Users\lasco\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.4\src\make_ule.rs C:\Users\lasco\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.4\src\make_varule.rs C:\Users\lasco\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.4\src\ule.rs C:\Users\lasco\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.4\src\utils.rs C:\Users\lasco\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.4\src\varule.rs
+
+C:\Users\lasco\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.4\src\lib.rs:
+C:\Users\lasco\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.4\src\make_ule.rs:
+C:\Users\lasco\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.4\src\make_varule.rs:
+C:\Users\lasco\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.4\src\ule.rs:
+C:\Users\lasco\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.4\src\utils.rs:
+C:\Users\lasco\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.4\src\varule.rs:
