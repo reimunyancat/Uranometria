@@ -21,6 +21,17 @@ struct TokenResponse {
     token: String,
 }
 
+#[derive(Serialize)]
+pub struct RepoInfo {
+    pub name: String,
+    pub language: Option<String>,
+    pub stars: u64,
+    pub fork: bool,
+    pub archived: bool,
+    pub pushed_at: String,
+    pub description: Option<String>,
+}
+
 impl GithubApp {
     pub fn new() -> Self {
         let app_id = std::env::var("GITHUB_APP_ID").expect("GITHUB_APP_ID");
@@ -85,5 +96,80 @@ impl GithubApp {
             .await
             .unwrap();
         res.json().await.unwrap()
+    }
+
+    pub async fn galaxy_repos(&self) -> Vec<RepoInfo> {
+        let raw = self.list_repos().await;
+        raw["repositories"]
+            .as_array()
+            .cloned()
+            .unwrap_or_default()
+            .into_iter()
+            .map(|r| RepoInfo {
+                name: r["name"].as_str().unwrap_or("unknown").to_string(),
+                language: r["language"].as_str().map(|s| s.to_string()),
+                stars: r["stargazers_count"].as_u64().unwrap_or(0),
+                fork: r["fork"].as_bool().unwrap_or(false),
+                archived: r["archived"].as_bool().unwrap_or(false),
+                pushed_at: r["pushed_at"].as_str().unwrap_or("").to_string(),
+                description: r["description"].as_str().map(|s| s.to_string()),
+            })
+            .collect()
+    }
+
+    pub async fn repo_tree(&self, owner: &str, repo: &str) -> serde_json::Value {
+        let token = self.installation_token().await;
+        let url = format!("https://api.github.com/repos/{owner}/{repo}/git/trees/HEAD?recursive=1");
+        let res = self
+            .client
+            .get(url)
+            .bearer_auth(token)
+            .header("Accept", "application/vnd.github+json")
+            .header("X-GitHub-Api-Version", "2022-11-28")
+            .send()
+            .await
+            .unwrap();
+        res.json().await.unwrap()
+    }
+
+    pub async fn file_content(&self, owner: &str, repo: &str, path: &str) -> String {
+        let token = self.installation_token().await;
+        let url = format!("https://api.github.com/repos/{owner}/{repo}/contents/{path}");
+        let res = self
+            .client
+            .get(url)
+            .bearer_auth(token)
+            .header("Accept", "application/vnd.github.raw")
+            .header("X-GitHub-Api-Version", "2022-11-28")
+            .send()
+            .await
+            .unwrap();
+        res.text().await.unwrap()
+    }
+    pub async fn demo_repos(&self, user: &str) -> Vec<RepoInfo> {
+        let url = format!("https://api.github.com/users/{user}/repos?per_page=100&sort=pushed");
+        let res = self
+            .client
+            .get(url)
+            .header("Accept", "application/vnd.github+json")
+            .header("X-GitHub-Api-Version", "2022-11-28")
+            .send()
+            .await
+            .unwrap();
+        let raw: serde_json::Value = res.json().await.unwrap();
+        raw.as_array()
+            .cloned()
+            .unwrap_or_default()
+            .into_iter()
+            .map(|r| RepoInfo {
+                name: r["name"].as_str().unwrap_or("unknown").to_string(),
+                language: r["language"].as_str().map(|s| s.to_string()),
+                stars: r["stargazers_count"].as_u64().unwrap_or(0),
+                fork: r["fork"].as_bool().unwrap_or(false),
+                archived: r["archived"].as_bool().unwrap_or(false),
+                pushed_at: r["pushed_at"].as_str().unwrap_or("").to_string(),
+                description: r["description"].as_str().map(|s| s.to_string()),
+            })
+            .collect()
     }
 }
