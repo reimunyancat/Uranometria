@@ -118,12 +118,23 @@ impl GithubApp {
     }
 
     pub async fn repo_tree(&self, owner: &str, repo: &str) -> serde_json::Value {
-        let token = self.installation_token().await;
         let url = format!("https://api.github.com/repos/{owner}/{repo}/git/trees/HEAD?recursive=1");
+        let token = self.installation_token().await;
         let res = self
             .client
-            .get(url)
+            .get(&url)
             .bearer_auth(token)
+            .header("Accept", "application/vnd.github+json")
+            .header("X-GitHub-Api-Version", "2022-11-28")
+            .send()
+            .await
+            .unwrap();
+        if res.status().is_success() {
+            return res.json().await.unwrap();
+        }
+        let res = self
+            .client
+            .get(&url)
             .header("Accept", "application/vnd.github+json")
             .header("X-GitHub-Api-Version", "2022-11-28")
             .send()
@@ -137,8 +148,19 @@ impl GithubApp {
         let url = format!("https://api.github.com/repos/{owner}/{repo}/contents/{path}");
         let res = self
             .client
-            .get(url)
+            .get(&url)
             .bearer_auth(token)
+            .header("Accept", "application/vnd.github.raw")
+            .header("X-GitHub-Api-Version", "2022-11-28")
+            .send()
+            .await
+            .unwrap();
+        if res.status().is_success() {
+            return res.text().await.unwrap();
+        }
+        let res = self
+            .client
+            .get(&url)
             .header("Accept", "application/vnd.github.raw")
             .header("X-GitHub-Api-Version", "2022-11-28")
             .send()
