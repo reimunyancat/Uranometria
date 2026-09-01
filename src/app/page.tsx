@@ -1,106 +1,111 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Canvas } from "@react-three/fiber";
-import { PointerLockControls, Stars } from "@react-three/drei";
-import FlyControls from "@/components/FlyControls";
-import StarField from "@/components/StarField";
-import SystemView from "@/components/SystemView";
-import {
-  fetchGalaxy,
-  fetchTree,
-  layoutGalaxy,
-  layoutSystem,
-  Orbital,
-  StarSystem,
-  fetchFile,
-} from "@/lib/galaxy";
-import FileViewer from "@/components/FileViewer";
+import { Stars } from "@react-three/drei";
 
 export default function Home() {
-  const [systems, setSystems] = useState<StarSystem[]>([]);
-  const [selected, setSelected] = useState<StarSystem | null>(null);
-  const [orbitals, setOrbitals] = useState<Orbital[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [viewer, setViewer] = useState<{
-    path: string;
-    content: string;
-  } | null>(null);
-  useEffect(() => {
-    fetchGalaxy()
-      .then((repos) => setSystems(layoutGalaxy(repos)))
-      .catch((e) => setError(String(e)));
-  }, []);
-  const enterSystem = (s: StarSystem) => {
-    setSelected(s);
-    fetchTree("reimunyancat", s.name)
-      .then((tree) => setOrbitals(layoutSystem(tree)))
-      .catch((e) => setError(String(e)));
-  };
-  const openFile = (path: string) => {
-    if (!selected) return;
-    fetchFile("reimunyancat", selected.name, path)
-      .then((content) => setViewer({ path, content }))
-      .catch((e) => setError(String(e)));
+  const [name, setName] = useState("");
+  const router = useRouter();
+  const go = () => {
+    const user = name.trim();
+    if (user) router.push(`/g/${encodeURIComponent(user)}`);
   };
   return (
-    <div style={{ width: "100vw", height: "100vh", background: "#0a0a0a" }}>
-      {error && (
-        <p
-          style={{
-            color: "#d97a6c",
-            position: "absolute",
-            top: 16,
-            left: 16,
-            zIndex: 1,
-          }}
-        >
-          Failed to load: {error}
-        </p>
-      )}
-      {selected && (
-        <button
-          onClick={() => setSelected(null)}
-          style={{
-            position: "absolute",
-            top: 16,
-            left: 16,
-            zIndex: 1,
-            background: "#141414",
-            border: "1px solid #2a2a2a",
-            color: "#e5e5e5",
-            padding: "6px 12px",
-            cursor: "pointer",
-          }}
-        >
-          Back to galaxy
-        </button>
-      )}
-      <Canvas
-        camera={{ position: [0, 30, 90], fov: 60 }}
-        key={selected?.name ?? "galaxy"}
-      >
-        <ambientLight intensity={0.15} />
-        <Stars radius={200} depth={80} count={8000} factor={4} fade />
-        {selected ? (
-          <SystemView
-            system={selected}
-            orbitals={orbitals}
-            onFileClick={openFile}
+    <div
+      style={{
+        position: "relative",
+        width: "100vw",
+        height: "100vh",
+        background: "#0a0a0a",
+        overflow: "hidden",
+      }}
+    >
+      <div style={{ position: "absolute", inset: 0 }}>
+        <Canvas camera={{ position: [0, 0, 0], fov: 60 }}>
+          <Stars
+            radius={150}
+            depth={60}
+            count={6000}
+            factor={4}
+            fade
+            speed={0.6}
           />
-        ) : (
-          <StarField systems={systems} onSelect={enterSystem} />
-        )}
-        <PointerLockControls />
-        <FlyControls />
-      </Canvas>
-      {viewer && (
-        <FileViewer
-          repo={selected?.name ?? ""}
-          path={viewer.path}
-          content={viewer.content}
-          onClose={() => setViewer(null)}
-        />
-      )}
+        </Canvas>
+      </div>
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <div
+          style={{
+            width: 380,
+            background: "#0d0d0d",
+            border: "1px solid #2a2a2a",
+            padding: "36px 32px",
+            display: "flex",
+            flexDirection: "column",
+            gap: 18,
+          }}
+        >
+          <div>
+            <h1
+              style={{
+                color: "#e5e5e5",
+                fontSize: 26,
+                letterSpacing: 6,
+                fontWeight: 600,
+                margin: 0,
+              }}
+            >
+              URANOMETRIA
+            </h1>
+            <p style={{ color: "#8b8b8b", fontSize: 13, margin: "10px 0 0" }}>
+              Turn a GitHub account into an explorable galaxy.
+            </p>
+          </div>
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") go();
+            }}
+            placeholder="GitHub username"
+            autoFocus
+            style={{
+              background: "#141414",
+              border: "1px solid #2a2a2a",
+              color: "#e5e5e5",
+              padding: "10px 12px",
+              fontSize: 14,
+              outline: "none",
+            }}
+          />
+          <button
+            onClick={go}
+            style={{
+              background: "#1a1a1a",
+              border: "1px solid #3a3a3a",
+              borderLeft: "3px solid #4d9fff",
+              color: "#e5e5e5",
+              padding: "10px 0",
+              fontSize: 14,
+              cursor: "pointer",
+            }}
+          >
+            Explore
+          </button>
+          <p style={{ color: "#555", fontSize: 12, margin: 0 }}>
+            Press Enter. Your own username works too.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

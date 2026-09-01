@@ -166,3 +166,11 @@ export async function fetchFile(
   );
   return res.text();
 }
+
+export async function fetchDemo(user: string): Promise<RepoInfo[]> {
+  const res = await fetch(
+    `http://localhost:4000/api/demo/${encodeURIComponent(user)}`,
+  );
+  const data = await res.json();
+  return data.repos;
+}
