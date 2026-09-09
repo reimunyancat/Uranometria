@@ -24,8 +24,8 @@ async fn main() {
         .route("/api/repos", get(repos))
         .route("/api/galaxy", get(galaxy))
         .route("/api/tree/{owner}/{repo}", get(tree))
-        .route("/api/file/:owner/:repo", get(file))
-        .route("/api/demo/:user", get(demo))
+        .route("/api/file/{owner}/{repo}", get(file))
+        .route("/api/demo/{user}", get(demo))
         .layer(CorsLayer::permissive())
         .with_state(state);
     let port = std::env::var("PORT").unwrap_or_else(|_| "4000".into());
