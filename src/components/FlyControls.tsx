@@ -14,9 +14,11 @@ export default function FlyControls() {
   const speedScale = useRef(1);
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement) return;
       keys.current[e.code] = true;
     };
     const up = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement) return;
       keys.current[e.code] = false;
     };
     const wheel = (e: WheelEvent) => {

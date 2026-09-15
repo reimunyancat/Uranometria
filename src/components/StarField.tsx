@@ -13,16 +13,24 @@ function Star({
 }) {
   const [hovered, setHovered] = useState(false);
   const lightRef = useRef<THREE.PointLight>(null);
+  const meshRef = useRef<THREE.Mesh>(null);
+  const baseColor = useRef(new THREE.Color(system.color));
   useFrame(({ clock }) => {
-    if (lightRef.current && system.activity > 0) {
-      const pulse = 0.5 + 0.5 * Math.sin(clock.elapsedTime * 3);
-      lightRef.current.intensity =
-        system.size * 6 * (1 + system.activity * pulse);
+    if (system.activity <= 0) return;
+    const pulse = 0.5 + 0.5 * Math.sin(clock.elapsedTime * 3);
+    const boost = 1 + system.activity * pulse * 1.5;
+    if (meshRef.current) {
+      const mat = meshRef.current.material as THREE.MeshBasicMaterial;
+      mat.color.copy(baseColor.current).multiplyScalar(boost);
+    }
+    if (lightRef.current) {
+      lightRef.current.intensity = system.size * 6 * boost;
     }
   });
   return (
     <group position={system.position}>
       <mesh
+        ref={meshRef}
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
         onClick={() => onSelect(system)}
