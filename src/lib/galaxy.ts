@@ -1,3 +1,5 @@
+const API = process.env.NEXT_PUBLIC_API_BASE ?? "${API}";
+
 export type RepoInfo = {
   name: string;
   language: string | null;
@@ -76,7 +78,7 @@ export function layoutGalaxy(repos: RepoInfo[]): StarSystem[] {
 }
 
 export async function fetchGalaxy(): Promise<RepoInfo[]> {
-  const res = await fetch("http://localhost:4000/api/galaxy");
+  const res = await fetch("${API}/api/galaxy");
   const data = await res.json();
   return data.repos;
 }
@@ -147,7 +149,7 @@ export async function fetchTree(
   owner: string,
   repo: string,
 ): Promise<TreeEntry[]> {
-  const res = await fetch(`http://localhost:4000/api/tree/${owner}/${repo}`);
+  const res = await fetch(`${API}/api/tree/${owner}/${repo}`);
   const data = await res.json();
   return (data.tree ?? []).map((e: Record<string, unknown>) => ({
     path: e.path,
@@ -162,15 +164,13 @@ export async function fetchFile(
   path: string,
 ): Promise<string> {
   const res = await fetch(
-    `http://localhost:4000/api/file/${owner}/${repo}?path=${encodeURIComponent(path)}`,
+    `${API}/api/file/${owner}/${repo}?path=${encodeURIComponent(path)}`,
   );
   return res.text();
 }
 
 export async function fetchDemo(user: string): Promise<RepoInfo[]> {
-  const res = await fetch(
-    `http://localhost:4000/api/demo/${encodeURIComponent(user)}`,
-  );
+  const res = await fetch(`${API}/api/demo/${encodeURIComponent(user)}`);
   const data = await res.json();
   return data.repos;
 }
