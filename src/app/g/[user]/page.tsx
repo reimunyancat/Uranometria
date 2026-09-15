@@ -17,6 +17,7 @@ import {
   Orbital,
   StarSystem,
 } from "@/lib/galaxy";
+import WarpDriver from "@/components/WarpDriver";
 
 const MY_ACCOUNT = "reimunyancat";
 
@@ -33,6 +34,10 @@ export default function GalaxyPage() {
     content: string;
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [warpTarget, setWarpTarget] = useState<[number, number, number] | null>(
+    null,
+  );
   useEffect(() => {
     const load = isMine ? fetchGalaxy() : fetchDemo(user);
     load
@@ -51,6 +56,15 @@ export default function GalaxyPage() {
     fetchFile(user, selected.name, path)
       .then((content) => setViewer({ path, content }))
       .catch((e) => setError(String(e)));
+  };
+  const search = () => {
+    const q = query.trim().toLowerCase();
+    if (!q) return;
+    const hit = systems.find((s) => s.name.toLowerCase().includes(q));
+    if (hit) {
+      document.exitPointerLock();
+      setWarpTarget(hit.position);
+    }
   };
   return (
     <div style={{ width: "100vw", height: "100vh", background: "#0a0a0a" }}>
@@ -104,6 +118,33 @@ export default function GalaxyPage() {
           </button>
         )}
       </div>
+      <div
+        style={{
+          position: "absolute",
+          bottom: 14,
+          right: 16,
+          zIndex: 1,
+          display: "flex",
+          gap: 8,
+        }}
+      >
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") search();
+          }}
+          placeholder="Search repos"
+          style={{
+            background: "#141414",
+            border: "1px solid #2a2a2a",
+            color: "#e5e5e5",
+            padding: "6px 10px",
+            fontSize: 12,
+            outline: "none",
+          }}
+        />
+      </div>
       <p
         style={{
           position: "absolute",
@@ -134,6 +175,7 @@ export default function GalaxyPage() {
           <StarField systems={systems} onSelect={enterSystem} />
         )}
         <PointerLockControls />
+        <WarpDriver target={warpTarget} />
         <FlyControls />
       </Canvas>
       {viewer && (

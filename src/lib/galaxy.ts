@@ -1,4 +1,4 @@
-const API = process.env.NEXT_PUBLIC_API_BASE ?? "${API}";
+const API = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:4000";
 
 export type RepoInfo = {
   name: string;
@@ -15,6 +15,7 @@ export type StarSystem = RepoInfo & {
   color: string;
   size: number;
   constellation: string;
+  activity: number;
 };
 
 export const LANGUAGE_COLORS: Record<string, string> = {
@@ -71,6 +72,10 @@ export function layoutGalaxy(repos: RepoInfo[]): StarSystem[] {
         ],
         color: LANGUAGE_COLORS[repo.language ?? ""] ?? "#8b8b8b",
         size: 1 + Math.min(Math.log10(repo.stars + 1) * 0.8, 2),
+        activity: Math.max(
+          0,
+          1 - (Date.now() - new Date(repo.pushed_at).getTime()) / 86400000 / 30,
+        ),
       });
     });
   });
@@ -78,7 +83,7 @@ export function layoutGalaxy(repos: RepoInfo[]): StarSystem[] {
 }
 
 export async function fetchGalaxy(): Promise<RepoInfo[]> {
-  const res = await fetch("${API}/api/galaxy");
+  const res = await fetch(`${API}/api/galaxy`);
   const data = await res.json();
   return data.repos;
 }

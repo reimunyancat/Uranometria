@@ -1,6 +1,7 @@
-"use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useFrame } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
+import * as THREE from "three";
 import { StarSystem } from "@/lib/galaxy";
 
 function Star({
@@ -11,6 +12,14 @@ function Star({
   onSelect: (s: StarSystem) => void;
 }) {
   const [hovered, setHovered] = useState(false);
+  const lightRef = useRef<THREE.PointLight>(null);
+  useFrame(({ clock }) => {
+    if (lightRef.current && system.activity > 0) {
+      const pulse = 0.5 + 0.5 * Math.sin(clock.elapsedTime * 3);
+      lightRef.current.intensity =
+        system.size * 6 * (1 + system.activity * pulse);
+    }
+  });
   return (
     <group position={system.position}>
       <mesh
@@ -22,6 +31,7 @@ function Star({
         <meshBasicMaterial color={system.color} />
       </mesh>
       <pointLight
+        ref={lightRef}
         intensity={system.size * 6}
         distance={system.size * 12}
         color={system.color}
